@@ -1,0 +1,164 @@
+﻿@model UCRMS.Models.CourseAssign
+
+@{
+    ViewBag.Title = "CourseAssign";
+    Layout = "~/Views/Shared/Teacher.cshtml";
+}
+
+<h2>CourseAssign</h2>
+
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>CourseAssign</h4>
+        <hr />
+        @Html.ValidationSummary(true)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DeptId,"Department", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select name="DeptId" id="DeptId" class="form-control">
+                    <option value="">--Select Department--</option>
+                    @foreach (var department in ViewBag.Department)
+                    {
+                        <option value="@department.Id">@department.Name</option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(model => model.DeptId)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TeacherId,"Teacher", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select name="TeacherId" id="TeacherId" class="form-control">
+                    <option value=" "> --Select--</option>
+                </select>
+                @Html.ValidationMessageFor(model => model.TeacherId)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CreditToTaken, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input type="text" name="CreditToTaken" id="CreditToTaken" class="form-control" readonly="readonly" />
+                @Html.ValidationMessageFor(model => model.CreditToTaken)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.RemainingCredit, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input type="text" name="RemainingCredit" id="RemainingCredit" class="form-control" readonly="readonly" />
+                @Html.ValidationMessageFor(model => model.RemainingCredit)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CourseCodeId, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select name="CourseCodeId" id="CourseCodeId" class="form-control">
+                    <option value="">--Select--</option>
+                </select>
+                @Html.ValidationMessageFor(model => model.CourseCodeId)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CourseName, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input type="text" name="CourseName" id="CourseName" class="form-control" readonly="readonly" />
+                @Html.ValidationMessageFor(model => model.CourseName)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CourseCredit, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input type="text" name="CourseCredit" id="CourseCredit" class="form-control" readonly="readonly" />
+                @Html.ValidationMessageFor(model => model.CourseCredit)
+            </div>
+        </div>
+
+        @*<div class="form-group">
+            @Html.LabelFor(model => model.Status, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Status)
+                @Html.ValidationMessageFor(model => model.Status)
+            </div>
+        </div>*@
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Assign" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/jquery.validate.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#DeptId').change(function() {
+                var dId = $('#DeptId').val();
+                var json = { deptId: dId };
+                $("#TeacherId").empty();
+                $("#CourseCodeId").empty();
+                $("#TeacherId").append('<option value="">--Select--</option>');
+                $("#CourseCodeId").append('<option value="">--Select--</option>');
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetByDepartmentId", "Teacher")',
+                    //url: '/Department/GetStudentsByDepartmentId',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(json),
+                    success: function(data) {
+                        $.each(data, function(key, value) {
+                            $("#TeacherId").append('<option value=' + value.TeacherId + '>' + value.TeacherName + '</option>');
+                            $("#CourseCodeId").append('<option value=' + value.CourseCode + '>' + value.CourseCode + '</option>');
+                        });
+                    },
+            });
+            });
+            $('#TeacherId').change(function() {
+                var tId = $('#TeacherId').val();
+                var json = { tchrId: tId };
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetByTeacherId", "Teacher")',
+                    //url: '/Department/GetStudentsByDepartmentId',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(json),
+                    success: function (data) {
+                        $('#CreditToTaken').val(data.CreditToTaken);
+                        $('#RemainingCredit').val(data.CreditToTaken);
+                    },
+                });
+            });
+            $('#CourseCodeId').change(function () {
+                var cId = $('#CourseCodeId').val();
+                var json = { courseId: cId };
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetByCourseId", "Teacher")',
+                    //url: '/Department/GetStudentsByDepartmentId',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(json),
+                    success: function (data) {
+                        $('#CourseName').val(data.Name);
+                        $('#CourseCredit').val(data.Credit);
+                    },
+                });
+            });
+        })
+    </script>
+}

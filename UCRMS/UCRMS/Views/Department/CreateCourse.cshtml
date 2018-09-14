@@ -1,0 +1,96 @@
+﻿@model UCRMS.Models.Course
+
+@{
+    ViewBag.Title = "CreateCourse";
+    Layout = "~/Views/Shared/Department.cshtml";
+}
+
+<h2>CreateCourse</h2>
+
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>Course</h4>
+        <hr />
+        @Html.ValidationSummary(true)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CourseCode, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CourseCode)
+                @Html.ValidationMessageFor(model => model.CourseCode)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Name)
+                @Html.ValidationMessageFor(model => model.Name)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Credit, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Credit)
+                @Html.ValidationMessageFor(model => model.Credit)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.Description)
+                @Html.ValidationMessageFor(model => model.Description)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DeptId,"Department", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select name="DeptId" id="DeptId" class="form-control">
+                    <option value="">--Select Department--</option>
+                    @foreach (var department in ViewBag.Department)
+                    {
+                        <option value="@department.Id">@department.Name</option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(model => model.DeptId)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SemesterId,"Semester", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select name="SemesterId" id="SemesterId" class="form-control">
+                    <option value="">--Select Semester--</option>
+                    @foreach (var semester in ViewBag.Semester)
+                    {
+                        <option value="@semester.Id">@semester.Name</option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(model => model.SemesterId)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+<h3>@ViewBag.msg</h3>
+<h3>@ViewBag.msg1</h3>
+<h3>@ViewBag.message</h3>
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
