@@ -71,10 +71,9 @@ namespace UCRMS.Gateway
            ,[ContactNo]
            ,[DesignationId]
            ,[DepartmentId]
-           ,[CreditTaken]
-           ,[RemainingCredit])
+           ,[CreditTaken])
             VALUES('" + teacher.Name + "','" + teacher.Address + "','"+teacher.Email+"','"+teacher.ContactNo+"','"+teacher.DesignationId+"'," +
-                           "'"+teacher.DeptId+"','"+teacher.CreditToTaken+"','"+teacher.RemainingCredit+"')";
+                           "'" + teacher.DeptId + "','" + teacher.CreditToTaken + "')";
             SqlCommand cmd = new SqlCommand(query, con);
             con.Open();
             int rowAffect = cmd.ExecuteNonQuery();
@@ -87,13 +86,13 @@ namespace UCRMS.Gateway
             string query = @"INSERT INTO [dbo].[CourseAssign]
            ([DeptId]
            ,[TeacherId]
-           ,[CreditAlreadyTaken]
-           ,[ReaminingCredit]
+           ,[RemainingCredit]
            ,[CourseCodeId]
            ,[CourseName]
            ,[CourseCredit]
            ,[Status])
-     VALUES('"+courseAssign.DeptId+"','"+courseAssign.TeacherId+"','"+courseAssign.CreditToTaken+"','"+courseAssign.RemainingCredit+"'," +
+     VALUES
+     ('" + courseAssign.DeptId + "','" + courseAssign.TeacherId + "','" + courseAssign.RemainingCredit + "'," +
                        "'"+courseAssign.CourseCodeId+"','"+courseAssign.CourseName+"','"+courseAssign.CourseCredit+"','"+courseAssign.Status+"')";
             SqlCommand cmd = new SqlCommand(query, con);
             con.Open();
@@ -127,9 +126,9 @@ namespace UCRMS.Gateway
 
         }
 
-        public TeacherViewModel GetTeacherCredit(int tchrId)
+        public string GetTeacherCredit(int tchrId)
         {
-            string query = @"select CreditTaken, RemainingCredit 
+            string query = @"select CreditTaken 
                              from [dbo].[Teacher]
                               where Id='"+tchrId+"'";
             SqlCommand cmd=new SqlCommand(query, con);
@@ -138,12 +137,43 @@ namespace UCRMS.Gateway
             TeacherViewModel aModel=new TeacherViewModel();
             if (reader.Read())
             {
-                aModel.CreditToTaken =  reader["CreditTaken"].ToString();
-                aModel.RemainingCredit = reader["RemainingCredit"].ToString();
+                aModel.CreditToTaken = reader["CreditTaken"].ToString();
             }
             reader.Close();
             con.Close();
-            return aModel;
+            return aModel.CreditToTaken;
+        }
+        public bool IsExistTeacher(int tchrId)
+        {
+            string query = @"SELECT * FROM [dbo].[CourseAssign] WHERE (TeacherId=@TeacherId)";
+            SqlCommand cmd = new SqlCommand(query, con);
+            con.Open();
+            bool isExist = false;
+            cmd.Parameters.AddWithValue("@TeacherId", tchrId);
+            SqlDataReader reader = cmd.ExecuteReader();
+            reader.Read();
+            isExist = reader.HasRows;
+            reader.Close();
+            con.Close();
+            return isExist;
+        }
+        public string GetRemainingCredit(int tchrId)
+        {
+            string query = @"select  MIN(RemainingCredit) as RemainingCredit
+                             from [dbo].[CourseAssign]
+                              where TeacherId='" + tchrId + "'";
+            SqlCommand cmd = new SqlCommand(query, con);
+            con.Open();
+            SqlDataReader reader = cmd.ExecuteReader();
+            TeacherViewModel aModel = new TeacherViewModel();
+
+            if (reader.Read())
+            {
+                aModel.CourseCredit = reader["RemainingCredit"].ToString();
+            }
+            reader.Close();
+            con.Close();
+            return aModel.CourseCredit;
         }
         public CourseNameCreditViewModel GetCourseNameCredit(string courseId)
         {

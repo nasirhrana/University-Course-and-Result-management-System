@@ -84,7 +84,7 @@ namespace UCRMS.Controllers
                     ViewBag.message = "failed to Save ";
                 }
 
-                return RedirectToAction("Index");
+                //return RedirectToAction("Index");
             }
 
             return View();

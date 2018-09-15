@@ -25,7 +25,6 @@ namespace UCRMS.Controllers
         [HttpPost]
         public ActionResult Create(Teacher teacher)
         {
-            teacher.RemainingCredit = teacher.CreditToTaken;
 
             ViewBag.Designation = aManager.GetAllDesignation();
             ViewBag.Department = aDepartmentManager.GetAllDepartment();
@@ -58,23 +57,33 @@ namespace UCRMS.Controllers
         public ActionResult CourseAssign(CourseAssign courseAssign)
         {
             ViewBag.Department = aDepartmentManager.GetAllDepartment();
+            var credit = courseAssign.RemainingCredit - courseAssign.CourseCredit;
+            courseAssign.RemainingCredit = credit;
             courseAssign.Status = "Assigned";
-            if (aManager.IsCourseCodeExist(courseAssign.CourseCodeId))
+            if (credit<0)
             {
-                ViewBag.message = "Course already assigner";
+                ViewBag.message = "Credit can not  be  more than" + " "+courseAssign.CreditToTaken;
             }
             else
             {
-                int msg = aManager.CourseAssign(courseAssign);
-                if (msg > 0)
+                if (aManager.IsCourseCodeExist(courseAssign.CourseCodeId))
                 {
-                    ViewBag.message = "Save Successfully";
+                    ViewBag.message = "Course already assigner";
                 }
                 else
                 {
-                    ViewBag.message = "failed to Save ";
+                    int msg = aManager.CourseAssign(courseAssign);
+                    if (msg > 0)
+                    {
+                        ViewBag.message = "Save Successfully";
+                    }
+                    else
+                    {
+                        ViewBag.message = "failed to Save ";
+                    }
                 }
             }
+            
             return View();
         }
 
@@ -85,7 +94,18 @@ namespace UCRMS.Controllers
         }
         public JsonResult GetByTeacherId(int tchrId)
         {
-            TeacherViewModel aList = aManager.GetTeacherCredit(tchrId);
+            TeacherViewModel aList = new TeacherViewModel();
+            if (aManager.IsExistTeacher(tchrId))
+            {
+                aList.RemainingCredit = aManager.GetRemainingCredit(tchrId);
+                aList.CreditToTaken = aManager.GetTeacherCredit(tchrId);
+            }
+            else
+            {
+                aList.CreditToTaken = aManager.GetTeacherCredit(tchrId);
+                aList.RemainingCredit = aList.CreditToTaken;
+            }
+            
             return Json(aList, JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetByCourseId(string courseId)

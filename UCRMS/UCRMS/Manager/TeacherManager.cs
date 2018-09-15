@@ -38,9 +38,17 @@ namespace UCRMS.Manager
         {
             return aGateway.GetAllTeacherCourseCode(id);
         }
-        public TeacherViewModel GetTeacherCredit(int tchrId)
+        public string GetTeacherCredit(int tchrId)
         {
             return aGateway.GetTeacherCredit(tchrId);
+        }
+        public bool IsExistTeacher(int tchrId)
+        {
+            return aGateway.IsExistTeacher(tchrId);
+        }
+        public string GetRemainingCredit(int tchrId)
+        {
+            return aGateway.GetRemainingCredit(tchrId);
         }
         public CourseNameCreditViewModel GetCourseNameCredit(string courseId)
         {

@@ -27,6 +27,5 @@ namespace UCRMS.Models
         [Range(0,25,ErrorMessage = "Credit can not be negative")]
         public double CreditToTaken { get; set; }
 
-        public double RemainingCredit { get; set; }
     }
 }

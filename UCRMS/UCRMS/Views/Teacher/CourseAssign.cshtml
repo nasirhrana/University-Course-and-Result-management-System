@@ -98,6 +98,7 @@
         </div>
     </div>
 }
+<h3>@ViewBag.message</h3>
 
 <div>
     @Html.ActionLink("Back to List", "Index")
@@ -140,7 +141,7 @@
                     data: JSON.stringify(json),
                     success: function (data) {
                         $('#CreditToTaken').val(data.CreditToTaken);
-                        $('#RemainingCredit').val(data.CreditToTaken);
+                        $('#RemainingCredit').val(data.RemainingCredit);
                     },
                 });
             });
