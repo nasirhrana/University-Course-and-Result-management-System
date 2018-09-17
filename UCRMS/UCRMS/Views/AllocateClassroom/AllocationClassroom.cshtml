@@ -1,0 +1,199 @@
+﻿@model UCRMS.Models.AllocateClassroom
+
+@{
+    ViewBag.Title = "AllocationClassroom";
+    Layout = "~/Views/Shared/Home.cshtml";
+}
+
+<h2>AllocationClassroom</h2>
+
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { name = "scheduleForm", id = "scheduleForm" })) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>AllocateClassroom</h4>
+        <hr />
+        @Html.ValidationSummary(true)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DeptId,"Department", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select name="DeptId" id="DeptId" class="form-control">
+                    <option value="">--Select Department--</option>
+                    @foreach (var department in ViewBag.Department)
+                    {
+                        <option value="@department.Id">@department.Name</option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(model => model.DeptId)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CourseId,"Course", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select name="CourseId" id="CourseId" class="form-control">
+                    <option value=" "> --Select Course--</option>
+                </select>
+                @Html.ValidationMessageFor(model => model.CourseId)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.RoomNoId,"Room No", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select name="RoomNoId" id="RoomNoId" class="form-control">
+                    <option value="">--Select Department--</option>
+                    @foreach (var department in ViewBag.Room)
+                    {
+                        <option value="@department.Id">@department.RoomNo</option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(model => model.RoomNoId)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DayId,"Day", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select name="DayId" id="DayId" class="form-control">
+                    <option value="">--Select Department--</option>
+                    @foreach (var department in ViewBag.Day)
+                    {
+                        <option value="@department.Id">@department.Name</option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(model => model.DayId)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.From, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input type="text" id="From" name="From" class="form-control" />
+                @Html.ValidationMessageFor(model => model.From)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.To, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input type="text" id="To" name="To" class="form-control" />
+                @Html.ValidationMessageFor(model => model.To)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" id="submit" value="Allocate" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+<h3 style="text-align: center"><label id="displayMsg"></label> </h3>
+
+
+
+@section Scripts {
+    @*@Scripts.Render("~/bundles/jqueryval")*@
+<script src="~/Scripts/jquery-1.12.4.min.js"></script>
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.timepicker.min.js"></script>
+<script src="~/Scripts/jquery-ui-timepicker-addon.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#DeptId').change(function () {
+                var dId = $('#DeptId').val();
+                var json = { deptId: dId };
+                $("#CourseId").empty();
+                $("#CourseId").append('<option value="">--Select--</option>');
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetByDepartmentId", "AllocateClassroom")',
+                    //url: '/Department/GetStudentsByDepartmentId',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(json),
+                    success: function (data) {
+                        $.each(data, function (key, value) {
+                            $("#CourseId").append('<option value=' + value.Id + '>' + value.CourseCode + '</option>');
+                        });
+                    },
+                });
+            });
+            $('#From').timepicker({
+
+
+            });
+            $('#To').timepicker({
+
+
+            });
+            $("#submit").click(function () {
+                var time = $("#From").val();
+                var time1= $("#To").val();
+                var deptId = $("#DeptId").val();
+                var courseId = $("#CourseId").val();
+                var roomId = $("#RoomNoId").val();
+                var dayId = $("#DayId").val();
+
+                var hour = parseInt(time.substr(0, 2));
+                var minute = parseInt(time.substr(3, 5));
+                var startTime = hour * 60 + minute;
+
+                hour = parseInt(time1.substr(0, 2));
+                minute = parseInt(time1.substr(3, 5));
+                var endTime = hour * 60 + minute;
+
+                if (startTime == endTime) {
+                    $("#displayMsg").text("Its not Possible to create Zero Minute Duration class");
+                }
+
+                if (startTime < endTime) {
+
+                    var jsonData = { From: time, To: time1, DeptId: deptId, DayId: dayId, CourseId: courseId, RoomNoId: roomId };
+
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("AllocationClassroom", "AllocateClassroom")',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(jsonData),
+                        dataType: "json",
+                        success: function (data) {
+                            $("#displayMsg").text(data);
+
+                        }
+                    });
+
+                }
+                if (startTime > endTime) {
+                    $("#displayMsg").text("Start time must be less than end time");
+
+                }
+
+
+
+            });
+            $("#scheduleForm").validate({
+                rules: {
+                    DeptId: "required",
+                    CourseId: "required",
+                    RoomNoId: "required",
+                    DayId: "required",
+                    From: "required",
+                    To: "required"
+                },
+                messages: {
+                    DeptId: "Please select your Date",
+                    CourseId: "Please enter your StartTime",
+                    RoomNoId: "Please enter your EndTime",
+                    DayId: "Please enter your EndTime",
+                    From: "Please enter your EndTime",
+                    To: "Please enter your EndTime"
+                }
+
+            });
+        });
+    </script>
+}

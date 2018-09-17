@@ -1,0 +1,80 @@
+﻿@model UCRMS.ViewModel.CourseStaticsViewModel
+
+@{
+    ViewBag.Title = "CourseStatics";
+    Layout = "~/Views/Shared/Home.cshtml";
+}
+
+<h2>CourseStatics</h2>
+
+
+<table class="table">
+    <tr>
+        <th></th>
+        <th>
+            <label>Department</label>
+
+            <select name="DeptId" id="DeptId" class="form-control">
+                <option value="">--Select Specialist--</option>
+                @foreach (var department in ViewBag.Department)
+                {
+                    <option value="@department.Id">@department.Name</option>
+                }
+            </select>
+
+        </th>
+    </tr>
+</table>
+<form>
+    <table class="table table-striped table-bordered" id="tableId">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Semester</th>
+                <th>Assigneed To</th>
+
+            </tr>
+        </thead>
+        <tbody id="CourseTableBody"></tbody>
+
+
+    </table>
+</form>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function() {
+            $("#tableId").hide();
+            $("#DeptId").change(function () {
+                var deptId = $("#DeptId").val();
+                $("#tableId").show();
+                $("#CourseTableBody").empty();
+                var json = { departmentId: deptId };
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetCourseByDepartmentId", "Teacher")',
+                    //url: '/Department/GetStudentsByDepartmentId',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(json),
+                    success: function (data) {
+                        //alert(data);
+                        $.each(data, function (key, value) {
+                            //alert(value.StudentId);
+                            $("#CourseTableBody").append('<tr><td>' + value.CourseCode + '</td><td>' + value.CourseName + '</td><td>' + value.Semester + '</td><td>' + value.AssignedTeacher + '</td></tr>');
+                        });
+                    },
+                    error: {
+
+                    },
+                    complete: {
+
+                    }
+                });
+            });
+        });
+    </script>
+
+}

@@ -125,7 +125,7 @@
                     success: function(data) {
                         $.each(data, function(key, value) {
                             $("#TeacherId").append('<option value=' + value.TeacherId + '>' + value.TeacherName + '</option>');
-                            $("#CourseCodeId").append('<option value=' + value.CourseCode + '>' + value.CourseCode + '</option>');
+                            $("#CourseCodeId").append('<option value=' + value.Id + '>' + value.CourseCode + '</option>');
                         });
                     },
             });

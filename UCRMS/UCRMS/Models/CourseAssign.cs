@@ -18,7 +18,7 @@ namespace UCRMS.Models
         [Required]
         public double RemainingCredit { get; set; }
         [Required]
-        public string CourseCodeId { get; set; }
+        public int CourseCodeId { get; set; }
         [Required]
         public string CourseName { get; set; }
         [Required]

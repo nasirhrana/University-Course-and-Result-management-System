@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - My ASP.NET Application</title>
     @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+        @Scripts.Render("~/bundles/modernizr")
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/datepicker.css" rel="stylesheet" />
 
 </head>
 <body>
@@ -26,7 +29,8 @@
                     <li>@Html.ActionLink("Create Course", "CreateCourse", "Department")</li>
                     <li>@Html.ActionLink("Create Teacher", "Create", "Teacher")</li>
                     <li>@Html.ActionLink("Course Assign", "CourseAssign", "Teacher")</li>
-                    @*<li>@Html.ActionLink("Create Course", "CreateCourse", "Department")</li>*@
+                    <li>@Html.ActionLink("Course Statistics", "CourseStatics", "Teacher")</li>
+                    <li>@Html.ActionLink("Register Student", "CreateStudent", "Student")</li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>

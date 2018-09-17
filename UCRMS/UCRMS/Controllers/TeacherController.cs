@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Mvc;
 using UCRMS.Manager;
@@ -15,7 +16,13 @@ namespace UCRMS.Controllers
         // GET: /Teacher/
         private TeacherManager aManager=new TeacherManager();
         private DepartmentManager aDepartmentManager=new DepartmentManager();
-        [HttpGet]
+
+        public ActionResult CourseStatics()
+        {
+            ViewBag.Department = aDepartmentManager.GetAllDepartment();
+            return View();
+        }
+         [HttpGet]
         public ActionResult Create()
         {
             ViewBag.Designation = aManager.GetAllDesignation();
@@ -111,6 +118,12 @@ namespace UCRMS.Controllers
         public JsonResult GetByCourseId(string courseId)
         {
             CourseNameCreditViewModel aList = aManager.GetCourseNameCredit(courseId);
+            return Json(aList, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetCourseByDepartmentId(int departmentId)
+        {
+            List<CourseStaticsViewModel> aList = aManager.GetCourseStatics(departmentId);
             return Json(aList, JsonRequestBehavior.AllowGet);
         }
 

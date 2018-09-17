@@ -10,5 +10,6 @@ namespace UCRMS.ViewModel
         public string CreditToTaken { get; set; }
         public string RemainingCredit { get; set; }
         public string CourseCredit { get; set; }
+     
     }
 }

@@ -20,7 +20,7 @@ namespace UCRMS.Manager
         {
             return aGateway.IsEmailExist(email);
         }
-        public bool IsCourseCodeExist(string code)
+        public bool IsCourseCodeExist(int code)
         {
             return aGateway.IsCourseCodeExist(code);
         }
@@ -53,6 +53,11 @@ namespace UCRMS.Manager
         public CourseNameCreditViewModel GetCourseNameCredit(string courseId)
         {
             return aGateway.GetCourseNameCredit(courseId);
+        }
+
+        public List<CourseStaticsViewModel> GetCourseStatics(int departmentId)
+        {
+            return aGateway.GetCourseStatics(departmentId);
         }
     }
 }

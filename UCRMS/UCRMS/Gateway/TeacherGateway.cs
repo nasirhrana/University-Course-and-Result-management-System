@@ -48,9 +48,9 @@ namespace UCRMS.Gateway
             con.Close();
             return isExist;
         }
-        public bool IsCourseCodeExist(string code)
+        public bool IsCourseCodeExist(int code)
         {
-            string query = @"SELECT * FROM CourseAssign WHERE (CourseCodeId=@CourseCodeId)";
+            string query = @"SELECT * FROM CourseAssign WHERE (CourseId=@CourseCodeId)";
             SqlCommand cmd = new SqlCommand(query, con);
             con.Open();
             bool isExist = false;
@@ -87,13 +87,11 @@ namespace UCRMS.Gateway
            ([DeptId]
            ,[TeacherId]
            ,[RemainingCredit]
-           ,[CourseCodeId]
-           ,[CourseName]
-           ,[CourseCredit]
+           ,[CourseId]
            ,[Status])
      VALUES
      ('" + courseAssign.DeptId + "','" + courseAssign.TeacherId + "','" + courseAssign.RemainingCredit + "'," +
-                       "'"+courseAssign.CourseCodeId+"','"+courseAssign.CourseName+"','"+courseAssign.CourseCredit+"','"+courseAssign.Status+"')";
+                       "'"+courseAssign.CourseCodeId+"','"+courseAssign.Status+"')";
             SqlCommand cmd = new SqlCommand(query, con);
             con.Open();
             int rowAffect = cmd.ExecuteNonQuery();
@@ -103,7 +101,7 @@ namespace UCRMS.Gateway
 
         public List<TeacherCourseCodeViewModel> GetAllTeacherCourseCode(int id)
         {
-            string query = @"Select t.Id,t.Name,c.CourseCode
+            string query = @"Select t.Id,t.Name,c.CourseCode, c.Id as CourseId
                             from [dbo].[Teacher] t
                             inner join [dbo].[Department] d on t.DepartmentId=d.Id
                             inner join Course c on d.Id=c.DeptId
@@ -116,6 +114,7 @@ namespace UCRMS.Gateway
             {
                 TeacherCourseCodeViewModel department = new TeacherCourseCodeViewModel();
                 department.TeacherId = (int)reader["Id"];
+                department.Id = (int)reader["CourseId"];
                 department.TeacherName = reader["Name"].ToString();
                 department.CourseCode = reader["CourseCode"].ToString();
                 aList.Add(department);
@@ -179,7 +178,7 @@ namespace UCRMS.Gateway
         {
             string query = @"select CourseName, Credit 
                              from Course
-                              where CourseCode='" + courseId + "'";
+                              where Id='" + courseId + "'";
             SqlCommand cmd = new SqlCommand(query, con);
             con.Open();
             SqlDataReader reader = cmd.ExecuteReader();
@@ -192,6 +191,32 @@ namespace UCRMS.Gateway
             reader.Close();
             con.Close();
             return aModel;
+        }
+        public List<CourseStaticsViewModel> GetCourseStatics(int departmentId)
+        {
+            string query = @"Select d.Name,c.CourseCode,c.CourseName,s.Semester
+                            from [dbo].[CourseAssign] t
+                            inner join [dbo].[Teacher] d on t.TeacherId=d.Id
+                            inner join Course c on t.CourseId=c.Id
+                            inner join [dbo].[Semester] s on s.Id=c.SemesterId
+                             where t.DeptId='" + departmentId + "'";
+            SqlCommand cmd = new SqlCommand(query, con);
+            con.Open();
+            SqlDataReader reader = cmd.ExecuteReader();
+            List<CourseStaticsViewModel> aList = new List<CourseStaticsViewModel>();
+            while (reader.Read())
+            {
+                CourseStaticsViewModel department = new CourseStaticsViewModel();
+                department.AssignedTeacher = reader["Name"].ToString();
+                department.CourseCode = reader["CourseCode"].ToString();
+                department.CourseName = reader["CourseName"].ToString();
+                department.Semester = reader["Semester"].ToString();
+                aList.Add(department);
+            }
+            reader.Close();
+            con.Close();
+            return aList;
+
         }
     }
 }
